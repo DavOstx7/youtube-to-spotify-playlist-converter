@@ -1,0 +1,20 @@
+{
+  "youtube": {
+    "urls": {
+      "playlist_items": "https://www.googleapis.com/youtube/v3/playlistItems"
+    },
+    "max_items_per_request": 50
+  },
+  "spotify": {
+    "urls": {
+      "user_profile": "https://api.spotify.com/v1/me",
+      "search": "https://api.spotify.com/v1/search",
+      "token": "https://accounts.spotify.com/api/token",
+      "authorization": "https://accounts.spotify.com/authorize",
+      "playlists": "https://api.spotify.com/v1/users/{user_id}/playlists",
+      "tracks": "https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+    },
+    "authorization_scopes": "user-read-private playlist-modify-private playlist-modify-public",
+    "max_tracks_per_request": 100
+  }
+}
