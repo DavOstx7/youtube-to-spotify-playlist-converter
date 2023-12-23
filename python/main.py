@@ -1,4 +1,4 @@
-import asyncio
+from src.core.utils import run_async
 from src.converter import PlaylistsConverter
 
 
@@ -9,5 +9,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    run_async(main())
