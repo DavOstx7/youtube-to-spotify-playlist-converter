@@ -1,0 +1,5 @@
+typing-extensions==4.1.1
+httpx==0.22.0
+fastapi==0.83
+uvicorn==0.15
+tenacity==8.2.2
