@@ -19,11 +19,10 @@ class PlaylistsConverter:
         self._spotify_playlist_ids = []
 
     async def run(self) -> List[SpotifySnapshotIdsT]:
-        add_titles_to_playlists_tasks = []
-        async for titles_batch in self._youtube_client.walk_playlists_titles(YOUTUBE_PLAYLIST_IDS):
-            add_titles_to_playlists_tasks.append(self._add_tracks_to_spotify_playlists(titles_batch))
+        add_titles_to_playlists_tasks = [self._add_tracks_to_spotify_playlists(titles_batch) async for titles_batch
+                                         in self._youtube_client.walk_playlists_titles(YOUTUBE_PLAYLIST_IDS)]
 
-        await asyncio.gather(*add_titles_to_playlists_tasks)
+        return await asyncio.gather(*add_titles_to_playlists_tasks)
 
     async def setup(self):
         configure_logging(LOGGING_LEVEL)
@@ -32,6 +31,7 @@ class PlaylistsConverter:
 
     async def _set_spotify_playlist_ids(self):
         self._spotify_playlist_ids.extend(SPOTIFY_EXISTING_PLAYLIST_IDS)
+
         if SPOTIFY_NEW_PLAYLISTS:
             new_playlist_ids = await self._spotify_client.create_playlists(SPOTIFY_NEW_PLAYLISTS)
             self._spotify_playlist_ids.extend(new_playlist_ids)
@@ -42,10 +42,7 @@ class PlaylistsConverter:
         if not track_uris:
             return
 
-        add_tracks_to_playlist_tasks = []
-        for spotify_playlist_id in self._spotify_playlist_ids:
-            add_tracks_to_playlist_tasks.append(
-                self._spotify_client.add_tracks_to_playlist(spotify_playlist_id, track_uris)
-            )
+        add_tracks_to_playlist_tasks = [self._spotify_client.add_tracks_to_playlist(spotify_playlist_id, track_uris)
+                                        for spotify_playlist_id in self._spotify_playlist_ids]
 
         return await asyncio.gather(*add_tracks_to_playlist_tasks)
