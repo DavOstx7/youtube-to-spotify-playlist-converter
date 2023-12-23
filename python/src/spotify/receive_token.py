@@ -1,8 +1,8 @@
-import asyncio
 import uvicorn
 import urllib.parse
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
+from src.core.utils import run_async
 from src.spotify import api
 from src.config.api_config import SPOTIFY_AUTHORIZATION_URL
 from src.config.token_config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
@@ -41,5 +41,5 @@ def server():
 
 
 if __name__ == "__main__":
-    # asyncio.run(manual())
+    # run_async(manual())
     server()
