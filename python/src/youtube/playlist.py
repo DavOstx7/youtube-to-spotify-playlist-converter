@@ -1,7 +1,7 @@
 import logging
 from typing import AsyncGenerator
 from src.youtube import api
-from src.youtube.models import PlaylistQueryParams, PlaylistItemsPage
+from src.youtube.models import PlaylistItemsPage
 from src.core.consts import MAX_PAGE_RESULTS
 
 logger = logging.getLogger(__name__)
