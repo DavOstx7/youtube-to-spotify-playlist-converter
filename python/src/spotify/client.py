@@ -63,6 +63,7 @@ class SpotifyClient:
 
         if "tracks" in response:
             items = response['tracks']['items']
+
             if items:
                 track_uri = items[0].get("uri")
 
@@ -72,4 +73,3 @@ class SpotifyClient:
                     logger.warning(f"Failed to find Spotify track uri for '{track_name}'")
 
                 return track_uri
-
