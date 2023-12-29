@@ -20,18 +20,13 @@ class SpotifyClient:
         self._user_id = response['id']
 
     async def create_playlists(self, playlists_info: List[PlaylistInfo]) -> SpotifyPlaylistIdsT:
-        create_playlist_tasks = []
-        for playlist_info in playlists_info:
-            create_playlist_tasks.append(self._create_playlist(playlist_info))
+        create_playlist_tasks = [self._create_playlist(playlist_info) for playlist_info in playlists_info]
         return await asyncio.gather(*create_playlist_tasks)
 
     async def search_for_track_uris(self, track_names: List[str]) -> SpotifyTrackUrisT:
         logger.info(f"Starting to search Spotify track uris for {len(track_names)} track names...")
 
-        search_track_uri_tasks = []
-        for track_name in track_names:
-            search_track_uri_tasks.append(self._search_for_track_uri(track_name))
-
+        search_track_uri_tasks = [self._search_for_track_uri(track_name) for track_name in track_names]
         track_uris = await asyncio.gather(*search_track_uri_tasks)
 
         if not track_uris:
