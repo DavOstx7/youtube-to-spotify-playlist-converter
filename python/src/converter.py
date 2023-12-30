@@ -1,6 +1,5 @@
-import asyncio
 from typing import List
-from src.core.utils import configure_logging
+from src.core.utils import gather_async, configure_logging
 from src.youtube.client import YoutubeClient
 from src.spotify.client import SpotifyClient
 from src.config.user_config import (
@@ -23,7 +22,7 @@ class PlaylistsConverter:
         add_titles_to_playlists_tasks = [self._add_titles_to_playlists(titles_batch) async for titles_batch
                                          in self._youtube_client.walk_playlists_titles(YOUTUBE_PLAYLIST_IDS)]
 
-        return await asyncio.gather(*add_titles_to_playlists_tasks)
+        return await gather_async(*add_titles_to_playlists_tasks, filter_out_empty_results=True)
 
     async def setup(self):
         configure_logging(LOGGING_LEVEL)
@@ -43,4 +42,4 @@ class PlaylistsConverter:
         add_tracks_to_playlist_tasks = [self._spotify_client.add_tracks_to_playlist(spotify_playlist_id, track_uris)
                                         for spotify_playlist_id in self._spotify_playlist_ids]
 
-        return await asyncio.gather(*add_tracks_to_playlist_tasks)
+        return await gather_async(*add_tracks_to_playlist_tasks)

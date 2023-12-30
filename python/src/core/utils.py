@@ -22,6 +22,16 @@ def run_async(main: Awaitable[T]) -> T:
             loop.close()
 
 
+async def gather_async(*coros_or_futures: Awaitable, return_exceptions=False,
+                       filter_out_empty_results: bool = False) -> list:
+    results = await asyncio.gather(*coros_or_futures, return_exceptions=return_exceptions)
+
+    if filter_out_empty_results:
+        return list(filter(lambda result: bool(result), results))
+    else:
+        return results
+
+
 def load_config_file(filename: str):
     config_file = os.path.join(_CONFIG_DIR, filename)
     with open(config_file, "r") as file:

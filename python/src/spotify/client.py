@@ -1,6 +1,6 @@
-import asyncio
 import logging
 from typing import List, Optional
+from src.core.utils import gather_async
 from src.spotify import api
 from src.spotify.models import PlaylistInfo
 
@@ -21,13 +21,13 @@ class SpotifyClient:
 
     async def create_playlists(self, playlists_info: List[PlaylistInfo]) -> SpotifyPlaylistIdsT:
         create_playlist_tasks = [self._create_playlist(playlist_info) for playlist_info in playlists_info]
-        return await asyncio.gather(*create_playlist_tasks)
+        return await gather_async(*create_playlist_tasks)
 
     async def search_for_track_uris(self, track_names: List[str]) -> SpotifyTrackUrisT:
         logger.info(f"Starting to search Spotify track uris for {len(track_names)} track names...")
 
         search_for_track_uri_tasks = [self._search_for_track_uri(track_name) for track_name in track_names]
-        track_uris = await asyncio.gather(*search_for_track_uri_tasks)
+        track_uris = await gather_async(*search_for_track_uri_tasks, filter_out_empty_results=True)
 
         if not track_uris:
             logger.warning("Could not find a single Spotify track uri for the given track names")
