@@ -1,0 +1,14 @@
+{
+  "logging": {
+    "level": "INFO"
+  },
+  "youtube": {
+    "api_key": null,
+    "playlist_ids": []
+  },
+  "spotify": {
+    "access_token": null,
+    "new_playlists": [],
+    "existing_playlist_ids": []
+  }
+}
