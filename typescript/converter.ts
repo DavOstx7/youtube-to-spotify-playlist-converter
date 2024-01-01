@@ -1,4 +1,4 @@
-import logger, {LoggingLevel} from "./common/logger";
+import logger from "./common/logger";
 import YoutubeClient from "./youtube/client";
 import SpotifyClient from "./spotify/client";
 import userConfig from '../config/user_config.json';
@@ -29,7 +29,7 @@ export default class PlaylistsConverter {
     }
 
     public async setup() {
-        logger.setLevel(LoggingLevel[userConfig.logging.level]);
+        logger.level = userConfig.logging.level.toLowerCase();
         await this.spotifyClient.setUserId();
         await this.setSpotifyPlaylistIds();
     }
