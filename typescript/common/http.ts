@@ -1,7 +1,12 @@
-
+import pRetry, { FailedAttemptError } from "p-retry";
 import logger from "./logger";
 import { ResponseError, TimeoutError } from "./errors";
-import { REQUEST_TIMEOUT_MILLISECONDS, LOG_HTTP_RESPONSES } from "./defaults";
+import { 
+    REQUEST_TIMEOUT_MILLISECONDS, LOG_HTTP_RESPONSES, MAX_REQUEST_RETRIES,
+    MIN_RETRY_TIMEOUT_MILLISECONDS, MAX_RETRY_TIMEOUT_MILLISECONDS,
+    RETRY_EXP_FACTOR_MILLISECONDS, USE_RETRY_JITTER
+
+} from "./defaults";
 
 interface TimedRequestInit extends RequestInit {
     timeout?: number;
@@ -31,13 +36,25 @@ async function validateResponse(response: Response, expectedStatusCodes: number[
     throw new ResponseError(responseDetails);
 }
 
-export function HttpRequest(expectedStatusCodes: number[], logResponse: boolean = LOG_HTTP_RESPONSES) {
+export function HttpRequest(expectedStatusCodes: number[], maxRetries: number = MAX_REQUEST_RETRIES, logResponse: boolean = LOG_HTTP_RESPONSES) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) { 
         const originalMethod = descriptor.value;
 
         descriptor.value = async function(...args: any[]): Promise<any> {
-            const response = await originalMethod.apply(this, args);
-            return await validateResponse(response, expectedStatusCodes, logResponse);
+            return await pRetry(async () => {
+                const response = await originalMethod.apply(this, args);
+                return await validateResponse(response, expectedStatusCodes, logResponse);
+            },
+            {
+                retries: maxRetries,
+                onFailedAttempt: (error: FailedAttemptError) => {
+                    logger.warn(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left`);
+                },
+                minTimeout: MIN_RETRY_TIMEOUT_MILLISECONDS,
+                maxTimeout: MAX_RETRY_TIMEOUT_MILLISECONDS,
+                factor: RETRY_EXP_FACTOR_MILLISECONDS,
+                randomize: USE_RETRY_JITTER,    
+            });
         }
 
         return descriptor;
