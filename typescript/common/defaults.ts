@@ -1,0 +1,12 @@
+export const REQUEST_TIMEOUT_MILLISECONDS = 2000;
+
+export const MAX_REQUEST_RETRIES = 2;
+export const LOG_HTTP_RESPONSES = true;
+
+export const MIN_RETRY_TIMEOUT_MILLISECONDS = 1000
+export const MAX_RETRY_TIMEOUT_MILLISECONDS = 15000
+export const RETRY_EXP_FACTOR_MILLISECONDS = 3000
+export const USE_RETRY_JITTER = true;
+
+export const MAX_PAGE_RESULTS = 5;
+export const MAX_TITLES_BATCH_SIZE = 100;
