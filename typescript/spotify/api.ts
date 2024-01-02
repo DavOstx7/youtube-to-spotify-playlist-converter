@@ -5,10 +5,11 @@ import { ValidationError } from '../common/errors';
 import apiConfig from '../../config/api_config.json';
 
 const config = apiConfig.spotify;
+const NO_RETRIES = 0;
 const MIN_POSITIVE_VALUE = 1;
 
 export class SpotifyAPI {
-    @HttpRequest([StatusCodes.OK])
+    @HttpRequest([StatusCodes.OK], NO_RETRIES)
     public async requestAccessToken(clientId: string, clientSecret: string, code: string, redirectUri: string): Promise<any> {
         const headers = this.getRequestAccessTokenHeaders(clientId, clientSecret);
         const formBody = new URLSearchParams({"grant_type": "authorization_code", "code": code, "redirect_uri": redirectUri}).toString();
@@ -20,7 +21,7 @@ export class SpotifyAPI {
         });
     }
 
-    @HttpRequest([StatusCodes.OK])
+    @HttpRequest([StatusCodes.OK], NO_RETRIES)
     public async requestUserProfile(accessToken: string): Promise<any> {
         const headers = {"Authorization": `Bearer ${accessToken}`};
 
