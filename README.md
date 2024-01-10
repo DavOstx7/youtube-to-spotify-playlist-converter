@@ -2,18 +2,22 @@
 
 Convert YouTube playlists to Spotify via different programming languages
 
+
 ## Prerequisites
 
 * <span style="color:#b2071d">YouTube API Key</span> - Follow the steps in the
   documentation [YouTube API][YouTubeAPILink]
 
 
+
 * <span style="color:#b2071d">YouTube Playlist ID</span> - Go to your YouTube playlist, and the ID will appear in the
   url (.../playlist?list=`ID`)
 
 
+
 * <span style="color:#1db954">Spotify Client ID & Secret</span> - Follow the steps in the
   documentation [Spotify API][SpotifyAPILink]
+
 
 
 * <span style="color:#1db954">Spotify Access Token</span> (**Lasts 1 Hour**) - Choose one of the methods below:
@@ -24,16 +28,18 @@ Convert YouTube playlists to Spotify via different programming languages
         2. [receiveToken.ts](typescript/spotify/receiveToken.ts)
 
 
+
 * <span style="color:#1db954">Spotify Playlist ID</span> (**Optional**) - Go to your Spotify playlist, and the ID will
   appear in the url (.../playlist/`ID`)
+
 
 ## Config Files
 
 * [config/api_config.json](config/api_config.json): This file contains relevant information about the APIs. It should
   remain untouched.
 
-* [config/user_config.json](config/user_config.json): This file contains the relevant access information/preferences. It
-  should be filled by the user before running one of the main programs:
+
+* [config/user_config.json](config/user_config.json): This file contains the relevant access information/preferences:
   ```shell
   {
     "logging": {
@@ -59,9 +65,11 @@ Convert YouTube playlists to Spotify via different programming languages
     }
   }
   ```
+  It should be filled by the user before running one of the main programs.
+
 
 * [config/token_config.json](config/token_config.json): This file contains the relevant information for receiving an
-  access token. It should be filled by the user before running one of the 'receive-token' scripts:
+  access token:
   ```shell
   {
     "spotify": {
@@ -76,6 +84,8 @@ Convert YouTube playlists to Spotify via different programming languages
     }
   }
   ```
+  It should be filled by the user before running one of the 'receive-token' scripts.
+
 
 ## Samples
 
@@ -90,6 +100,7 @@ You can look at the samples directory [samples](samples) to get an idea for how 
 [SpotifyAPILink]:https://developer.spotify.com/documentation/web-api/concepts/apps
 
 [SpotifyTokenLink]:https://developer.spotify.com/documentation/web-api/concepts/access-token
+
 
 ## Running Code
 
