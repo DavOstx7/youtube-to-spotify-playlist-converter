@@ -7,17 +7,14 @@ Convert YouTube playlists to Spotify via different programming languages
 * <span style="color:#b2071d">YouTube API Key</span> - Follow the steps in the
   documentation [YouTube API][YouTubeAPILink]
 
----
 
 * <span style="color:#b2071d">YouTube Playlist ID</span> - Go to your YouTube playlist, and the ID will appear in the
   url (.../playlist?list=`ID`)
 
----
 
 * <span style="color:#1db954">Spotify Client ID & Secret</span> - Follow the steps in the
   documentation [Spotify API][SpotifyAPILink]
 
----
 
 * <span style="color:#1db954">Spotify Access Token</span> (**Lasts 1 Hour**) - Choose one of the methods below:
     * Follow the steps in the documentation [Spotify Access Token][SpotifyTokenLink]
@@ -26,15 +23,14 @@ Convert YouTube playlists to Spotify via different programming languages
         * [receive_token.py](python/src/spotify/receive_token.py)
         * [receiveToken.ts](typescript/spotify/receiveToken.ts)
 
----
 
 * <span style="color:#1db954">Spotify Playlist ID</span> (**Optional**) - Go to your Spotify playlist, and the ID will
   appear in the url (.../playlist/`ID`)
 
 ## Config Files
 
-* [config/api_config.json](config/api_config.json): This file contains relevant information about the APIs.
-  It should remain untouched.
+* [config/api_config.json](config/api_config.json): This file contains relevant information about the APIs. It should
+  remain untouched.
 
 * [config/user_config.json](config/user_config.json): This file contains the relevant access information/preferences. It
   should be filled by the user before running one of the main programs:
@@ -99,11 +95,11 @@ You can look at the samples directory [samples](samples) to get an idea for how 
 
 Fill the values inside [config/user_config.json](config/user_config.json). Then run one of the following main programs:
 
-* **Python 3^6: [main.py](python/main.py)
+* **Python 3^6**: [main.py](python/main.py)
     ```shell
     python python/main.py
     ```
-* **TypeScript: [main.ts](typescript/main.ts)
+* **TypeScript**: [main.ts](typescript/main.ts)
     ```shell
     ts-node typescript/main.ts
     ```
