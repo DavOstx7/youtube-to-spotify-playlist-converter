@@ -5,7 +5,7 @@ from src.youtube.models import PlaylistItemsPage
 from src.core.consts import MAX_PAGE_RESULTS
 
 logger = logging.getLogger(__name__)
-AsyncYoutubePlaylistItemsPageIteratorT = AsyncGenerator[PlaylistItemsPage, None]
+AsyncPlaylistItemsPageIterableT = AsyncGenerator[PlaylistItemsPage, None]
 
 
 class YoutubePlaylist:
@@ -29,7 +29,7 @@ class YoutubePlaylist:
             return False
         return 'nextPageToken' in self._current_page
 
-    async def walk_pages(self) -> AsyncYoutubePlaylistItemsPageIteratorT:
+    async def walk_pages(self) -> AsyncPlaylistItemsPageIterableT:
         yield await self.search_for_page()
 
         while self.has_next_page:
