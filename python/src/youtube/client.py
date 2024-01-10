@@ -4,7 +4,7 @@ from src.youtube.playlist import YoutubePlaylist
 from src.core.consts import MAX_TITLES_BATCH_SIZE
 
 logger = logging.getLogger(__name__)
-AsyncYoutubeTitlesIteratorT = AsyncGenerator[List[str], None]
+AsyncPlaylistTitlesIterableT = AsyncGenerator[List[str], None]
 
 
 class YoutubeClient:
@@ -12,7 +12,7 @@ class YoutubeClient:
         self._api_key = api_key
 
     async def walk_playlists_titles(self, playlist_ids: List[str],
-                                    max_batch_size: int = MAX_TITLES_BATCH_SIZE) -> AsyncYoutubeTitlesIteratorT:
+                                    max_batch_size: int = MAX_TITLES_BATCH_SIZE) -> AsyncPlaylistTitlesIterableT:
         titles_batch = []
 
         for playlist_id in playlist_ids:
