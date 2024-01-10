@@ -20,8 +20,8 @@ Convert YouTube playlists to Spotify via different programming languages
     * Follow the steps in the documentation [Spotify Access Token][SpotifyTokenLink]
     * Fill the values inside [config/token_config.json](config/token_config.json). Then run one of the following
       scripts:
-        * [receive_token.py](python/src/spotify/receive_token.py)
-        * [receiveToken.ts](typescript/spotify/receiveToken.ts)
+        1. [receive_token.py](python/src/spotify/receive_token.py)
+        2. [receiveToken.ts](typescript/spotify/receiveToken.ts)
 
 
 * <span style="color:#1db954">Spotify Playlist ID</span> (**Optional**) - Go to your Spotify playlist, and the ID will
@@ -95,11 +95,11 @@ You can look at the samples directory [samples](samples) to get an idea for how 
 
 Fill the values inside [config/user_config.json](config/user_config.json). Then run one of the following main programs:
 
-* **Python 3^6**: [main.py](python/main.py)
+1. **Python 3^6**: [main.py](python/main.py)
     ```shell
     python python/main.py
     ```
-* **TypeScript**: [main.ts](typescript/main.ts)
+2. **TypeScript**: [main.ts](typescript/main.ts)
     ```shell
     ts-node typescript/main.ts
     ```
