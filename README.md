@@ -1,49 +1,49 @@
-# YouTubeToSpotifyPlaylistConverter
+# YouTube To Spotify Playlist Converter
 
-Convert YouTube playlists to Spotify via different programming languages
+Convert YouTube playlists to Spotify playlists via different programming languages
 
 
 ## Prerequisites
 
-* <span style="color:#b2071d">YouTube API Key</span> - Follow the steps in the
+* <span style="color:#b2071d">YouTube API Key</span> - Follow the steps in the official
   documentation [YouTube API][YouTubeAPILink]
 
+---
 
-
-* <span style="color:#b2071d">YouTube Playlist ID</span> - Go to your YouTube playlist, and the ID will appear in the
+* <span style="color:#b2071d">YouTube Playlist ID</span> - Go to a YouTube playlist, and the ID will appear in the
   url (.../playlist?list=`ID`)
 
-
+---
 
 * <span style="color:#1db954">Spotify Client ID & Secret</span> - Follow the steps in the
-  documentation [Spotify API][SpotifyAPILink]
+  official documentation [Spotify API][SpotifyAPILink]
 
-
+---
 
 * <span style="color:#1db954">Spotify Access Token</span> (**Lasts 1 Hour**) - Choose one of the methods below:
-    * Follow the steps in the documentation [Spotify Access Token][SpotifyTokenLink]
-    * Fill the values inside [config/token_config.json](config/token_config.json). Then run one of the following
-      scripts:
+    * Follow the steps in the official documentation [Spotify Access Token][SpotifyTokenLink]
+    * First, make sure the token configuration file [config/token_config.json](config/token_config.json) is ready. Then, 
+      run one of the following scripts:
         1. [receive_token.py](python/src/spotify/receive_token.py)
         2. [receiveToken.ts](typescript/spotify/receiveToken.ts)
 
+---
 
-
-* <span style="color:#1db954">Spotify Playlist ID</span> (**Optional**) - Go to your Spotify playlist, and the ID will
+* <span style="color:#1db954">Spotify Playlist ID</span> - Go to a Spotify playlist, and the ID will
   appear in the url (.../playlist/`ID`)
 
 
 ## Config Files
 
-* [config/api_config.json](config/api_config.json): This file contains relevant information about the APIs. It should
-  remain untouched.
+* [config/api_config.json](config/api_config.json): This file contains information about the relevant APIs. It should
+  not be touched.
 
 
-* [config/user_config.json](config/user_config.json): This file contains the relevant access information/preferences:
+* [config/user_config.json](config/user_config.json): This file contains the user's data & preferences:
   ```shell
   {
     "logging": {
-      # Set the logging level of the main program
+      # OPTIONAL: Change the logging level
       "level": "INFO"
     },
     "youtube": {
@@ -57,19 +57,21 @@ Convert YouTube playlists to Spotify via different programming languages
       # Set the Spotify Access Token as described in the 'Prerequisites' section
       "access_token": null, 
       
-      # OPTIONAL: Provide the information for the new Spotify playlists (destination). It should be structured as follows: [{"name": "<name>", "description": "<description>", "public": <true|false>}, ...]
+      # NOTE: You can choose to add tracks to new and/or existing playlists
+  
+      # Provide the information for the new Spotify playlists (destination)
+      # It should be structured as follows: [{"name": "<name>", "description": "<description>", "public": <true|false>}, ...]
       "new_playlists": [], 
         
-      # OPTIONAL: Provide the Spotify Playlist IDs (destination) as described in the 'Prerequisites' section
+      # Provide the Spotify Playlist IDs (destination) as described in the 'Prerequisites' section
       "existing_playlist_ids": [] 
     }
   }
   ```
-  It should be filled by the user before running one of the main programs.
+  **__NOTE:__** It should be filled before running one of the main programs.
 
 
-* [config/token_config.json](config/token_config.json): This file contains the relevant information for receiving an
-  access token:
+* [config/token_config.json](config/token_config.json): This file contains token related data:
   ```shell
   {
     "spotify": {
@@ -84,27 +86,22 @@ Convert YouTube playlists to Spotify via different programming languages
     }
   }
   ```
-  It should be filled by the user before running one of the 'receive-token' scripts.
+  **__NOTE:__** It should be filled before running one of the token receival scripts.
 
 
 ## Samples
 
-You can look at the samples directory [samples](samples) to get an idea for how you should fill the needed config files:
+The samples directory [samples](samples) contains examples of how the config files should look.
 
 * For user configuration, look at [samples/user_config.json](samples/user_config.json)
 
 * For token configuration, look at [samples/token_config.json](samples/token_config.json)
 
-[YouTubeAPILink]:https://developers.google.com/youtube/v3/getting-started
-
-[SpotifyAPILink]:https://developer.spotify.com/documentation/web-api/concepts/apps
-
-[SpotifyTokenLink]:https://developer.spotify.com/documentation/web-api/concepts/access-token
-
 
 ## Running Code
 
-Fill the values inside [config/user_config.json](config/user_config.json). Then run one of the following main programs:
+First, make sure the user configuration file [config/user_config.json](config/user_config.json) is ready. Then, 
+run one of the following programs:
 
 1. **Python 3^6**: [main.py](python/main.py)
     ```shell
@@ -114,3 +111,8 @@ Fill the values inside [config/user_config.json](config/user_config.json). Then 
     ```shell
     ts-node typescript/main.ts
     ```
+   
+
+[YouTubeAPILink]:https://developers.google.com/youtube/v3/getting-started
+[SpotifyAPILink]:https://developer.spotify.com/documentation/web-api/concepts/apps
+[SpotifyTokenLink]:https://developer.spotify.com/documentation/web-api/concepts/access-token
