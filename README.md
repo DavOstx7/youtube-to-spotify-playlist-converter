@@ -103,15 +103,28 @@ The samples directory [samples](samples) contains examples of how the config fil
 First, make sure the user configuration file [config/user_config.json](config/user_config.json) is ready. Then, 
 run one of the following programs:
 
-1. **Python 3^6**: [main.py](python/main.py)
-    ```shell
-    python python/main.py
-    ```
-2. **TypeScript**: [main.ts](typescript/main.ts)
-    ```shell
-    ts-node typescript/main.ts
-    ```
+**Python 3^6**: [main.py](python/main.py)
+```shell
+python python/main.py
+```
+
+**TypeScript**: [main.ts](typescript/main.ts)
+```shell
+ts-node typescript/main.ts
+```
    
+
+## Examples
+
+### Converting YouTube Playlist To New Spotify Playlist (Oppenheimer Edition)
+
+1. Python
+<img src="./examples/python_oppenheimer.png">
+
+2. TypeScript 
+<img src="./examples/typescript_oppenheimer.png">
+
+
 
 [YouTubeAPILink]:https://developers.google.com/youtube/v3/getting-started
 [SpotifyAPILink]:https://developer.spotify.com/documentation/web-api/concepts/apps
