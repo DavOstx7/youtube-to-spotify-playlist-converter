@@ -113,6 +113,19 @@ run one of the following programs:
     ```
    
 
+## Examples
+
+### Creating New Oppenheimer Playlist (Python)
+
+<img src="./examples/python_oppenheimer.png">
+
+---
+
+### Creating New Oppenheimer Playlist (Script)
+
+<img src="./examples/typescript_oppenheimer.png">
+
+
 [YouTubeAPILink]:https://developers.google.com/youtube/v3/getting-started
 [SpotifyAPILink]:https://developer.spotify.com/documentation/web-api/concepts/apps
 [SpotifyTokenLink]:https://developer.spotify.com/documentation/web-api/concepts/access-token
