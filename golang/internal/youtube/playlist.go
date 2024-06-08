@@ -12,7 +12,7 @@ type YouTubePlaylist struct {
 
 func NewYouTubePlaylist(apiKey string, playlistID string, maxResults int) *YouTubePlaylist {
 	return &YouTubePlaylist{
-		queryParams:     GetPlaylistQueryParams(apiKey, playlistID, maxResults),
+		queryParams:     NewPlaylistItemsQueryParams(apiKey, playlistID, maxResults),
 		currentResponse: nil,
 	}
 }
@@ -53,7 +53,7 @@ func (yp *YouTubePlaylist) FetchPlaylistItemsPage() *GetPlaylistItemsResponse {
 		)
 	}
 
-	yp.currentResponse = RequestPlaylistItemsPage(yp.queryParams)
+	yp.currentResponse = GetPlaylistItems(yp.queryParams)
 	return yp.currentResponse
 }
 

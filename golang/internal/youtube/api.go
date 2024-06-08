@@ -12,7 +12,7 @@ const MinValidMaxResults = 1
 
 var APIConfig = &config.GetAPIConfig().YouTube
 
-func RequestPlaylistItemsPage(queryParams *PlaylistItemsQueryParams) *GetPlaylistItemsResponse {
+func GetPlaylistItems(queryParams *PlaylistItemsQueryParams) *GetPlaylistItemsResponse {
 	respBody := &GetPlaylistItemsResponse{}
 	requests.Get(APIConfig.URLs.PlaylistItems,
 		requests.QueryParams(queryParams),
@@ -22,7 +22,7 @@ func RequestPlaylistItemsPage(queryParams *PlaylistItemsQueryParams) *GetPlaylis
 	return respBody
 }
 
-func GetPlaylistQueryParams(apiKey string, playlistID string, maxResults int) *PlaylistItemsQueryParams {
+func NewPlaylistItemsQueryParams(apiKey string, playlistID string, maxResults int) *PlaylistItemsQueryParams {
 	if err := validateMaxResultsValue(maxResults); err != nil {
 		panic(err)
 	}

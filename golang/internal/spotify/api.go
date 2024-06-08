@@ -22,7 +22,7 @@ func GetAccessToken(tokenConfig *config.SpotifyTokenConfig, code string) *GetAcc
 	respBody := &GetAccessTokenResponse{}
 	requests.Post(APIConfig.URLs.Token,
 		requests.Headers(map[string]string{
-			"Authorization": "Basic " + encodeBasicAuthCreds(tokenConfig.ClientID, tokenConfig.ClientSecret),
+			"Authorization": "Basic " + encodeBasicAuthCredentials(tokenConfig.ClientID, tokenConfig.ClientSecret),
 			"Content-Type":  "application/x-www-form-urlencoded",
 		}),
 		requests.Body(bytes.NewBufferString(url.Values{
@@ -80,7 +80,7 @@ func AddTracksToPlaylist(accessToken string, playlistID string, trackURIs []stri
 	return addItemsToPlaylist(accessToken, playlistID, trackURIs, position).SnapshotID
 }
 
-func CreateAuthorizationQueryParams(clientID string, redirectURI string) *AuthorizationQueryParams {
+func NewAuthorizationQueryParams(clientID string, redirectURI string) *AuthorizationQueryParams {
 	return &AuthorizationQueryParams{
 		ClientID:     clientID,
 		ResponseType: "code",
@@ -89,7 +89,7 @@ func CreateAuthorizationQueryParams(clientID string, redirectURI string) *Author
 	}
 }
 
-func encodeBasicAuthCreds(clientID string, clientSecret string) string {
+func encodeBasicAuthCredentials(clientID string, clientSecret string) string {
 	return base64.StdEncoding.EncodeToString([]byte(clientID + ":" + clientSecret))
 }
 
