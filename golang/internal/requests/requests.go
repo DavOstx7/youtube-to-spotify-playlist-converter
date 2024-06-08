@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/avast/retry-go"
@@ -22,6 +23,26 @@ func Post(url string, options ...Option) {
 }
 
 func Do(method string, url string, config *Config) error {
+	err := do(method, url, config)
+
+	if err != nil && config.PanicOnError {
+		panic(err)
+	}
+
+	return err
+}
+
+func do(method string, url string, config *Config) error {
+	var rawBody []byte
+
+	if config.Body != nil {
+		var err error
+		rawBody, err = io.ReadAll(config.Body)
+		if err != nil {
+			return err
+		}
+	}
+
 	retryOptions := []retry.Option{
 		retry.DelayType(retry.BackOffDelay),
 		retry.Attempts(config.MaxAttempts),
@@ -32,8 +53,13 @@ func Do(method string, url string, config *Config) error {
 		}),
 	}
 
-	err := retry.Do(func() error {
-		req, err := http.NewRequest(method, url, config.Body)
+	return retry.Do(func() error {
+		var body io.Reader
+		if rawBody != nil {
+			body = bytes.NewReader(rawBody)
+		}
+
+		req, err := http.NewRequest(method, url, body)
 		if err != nil {
 			return err
 		}
@@ -81,10 +107,4 @@ func Do(method string, url string, config *Config) error {
 
 		return nil
 	}, retryOptions...)
-
-	if err != nil && config.PanicOnError {
-		panic(err)
-	}
-
-	return err
 }
