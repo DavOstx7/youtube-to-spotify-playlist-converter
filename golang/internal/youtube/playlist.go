@@ -6,45 +6,58 @@ import (
 )
 
 type YouTubePlaylist struct {
-	queryParams     *PlaylistItemsQueryParams
-	currentResponse *GetPlaylistItemsResponse
+	queryParams  *PlaylistItemsQueryParams
+	lastResponse *GetPlaylistItemsResponse
 }
 
 func NewYouTubePlaylist(apiKey string, playlistID string, maxResults int) *YouTubePlaylist {
 	return &YouTubePlaylist{
-		queryParams:     NewPlaylistItemsQueryParams(apiKey, playlistID, maxResults),
-		currentResponse: nil,
+		queryParams:  NewPlaylistItemsQueryParams(apiKey, playlistID, maxResults),
+		lastResponse: nil,
 	}
 }
 
-func (yp *YouTubePlaylist) IsInitialState() bool {
-	return yp.currentResponse == nil
+func (yp *YouTubePlaylist) HasResponse() bool {
+	return yp.lastResponse != nil
+}
+
+func (yp *YouTubePlaylist) Reset() {
+	yp.queryParams.PageToken = nil
+	yp.lastResponse = nil
 }
 
 func (yp *YouTubePlaylist) HasPrevPage() bool {
-	if yp.IsInitialState() {
+	if !yp.HasResponse() {
 		return false
 	}
-	return yp.currentResponse.PrevPageToken != nil
+	return yp.lastResponse.PrevPageToken != nil
 }
 
 func (yp *YouTubePlaylist) HasNextPage() bool {
-	if yp.IsInitialState() {
+	if !yp.HasResponse() {
 		return false
 	}
-	return yp.currentResponse.NextPageToken != nil
+	return yp.lastResponse.NextPageToken != nil
 }
 
-func (yp *YouTubePlaylist) SetPrevPage() {
-	yp.queryParams.PageToken = yp.currentResponse.PrevPageToken
+func (yp *YouTubePlaylist) SetPrevPage() bool {
+	if !yp.HasPrevPage() {
+		return false
+	}
+	yp.queryParams.PageToken = yp.lastResponse.PrevPageToken
+	return true
 }
 
-func (yp *YouTubePlaylist) SetNextPage() {
-	yp.queryParams.PageToken = yp.currentResponse.NextPageToken
+func (yp *YouTubePlaylist) SetNextPage() bool {
+	if !yp.HasNextPage() {
+		return false
+	}
+	yp.queryParams.PageToken = yp.lastResponse.NextPageToken
+	return true
 }
 
-func (yp *YouTubePlaylist) FetchPlaylistItemsPage() *GetPlaylistItemsResponse {
-	if yp.IsInitialState() {
+func (yp *YouTubePlaylist) FetchPlaylistItemsFromPage(playlistItemsChan chan<- []PlaylistItem) {
+	if !yp.HasResponse() {
 		slog.Debug(fmt.Sprintf("Searching initial YouTube playlist page for playlist '%s'", yp.queryParams.PlaylistID))
 	} else {
 		slog.Debug(
@@ -53,20 +66,16 @@ func (yp *YouTubePlaylist) FetchPlaylistItemsPage() *GetPlaylistItemsResponse {
 		)
 	}
 
-	yp.currentResponse = GetPlaylistItems(yp.queryParams)
-	return yp.currentResponse
+	response := GetPlaylistItems(yp.queryParams)
+	playlistItemsChan <- response.Items
+	yp.lastResponse = response
 }
 
-func (yp *YouTubePlaylist) FetchPlaylistItemsPages() <-chan *GetPlaylistItemsResponse {
-	pageChan := make(chan *GetPlaylistItemsResponse)
-	go func() {
-		defer close(pageChan)
+func (yp *YouTubePlaylist) FetchAllPlaylistItems(playlistItemsChan chan<- []PlaylistItem) {
+	yp.Reset()
 
-		pageChan <- yp.FetchPlaylistItemsPage()
-		for yp.HasNextPage() {
-			yp.SetNextPage()
-			pageChan <- yp.FetchPlaylistItemsPage()
-		}
-	}()
-	return pageChan
+	yp.FetchPlaylistItemsFromPage(playlistItemsChan)
+	for yp.SetNextPage() {
+		yp.FetchPlaylistItemsFromPage(playlistItemsChan)
+	}
 }
