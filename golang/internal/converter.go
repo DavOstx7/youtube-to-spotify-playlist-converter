@@ -12,7 +12,7 @@ import (
 
 const MaxTitlesBatchSize = 50
 const TracksInsertionPosition = 0
-const MaxAddTitlesToPlaylistWorkers = 5
+const AddTitlesToPlaylistsWorkers = 5
 
 type PlaylistsConverter struct {
 	userConfig         *config.UserConfig
@@ -43,9 +43,9 @@ func (pc *PlaylistsConverter) Run() <-chan string {
 	titleBatchChan := pc.youtubeClient.FetchPlaylistsTitles(pc.userConfig.YouTube.PlaylistIDs, MaxTitlesBatchSize)
 	snapshotIDChan := make(chan string)
 	var wg sync.WaitGroup
-	wg.Add(MaxAddTitlesToPlaylistWorkers)
+	wg.Add(AddTitlesToPlaylistsWorkers)
 	
-	for i := 0; i < MaxAddTitlesToPlaylistWorkers; i++ {
+	for i := 0; i < AddTitlesToPlaylistsWorkers; i++ {
 		go func() {
 			defer wg.Done()
 			pc.addTitlesToPlaylists(titleBatchChan, snapshotIDChan)
@@ -64,7 +64,7 @@ func (pc *PlaylistsConverter) addTitlesToPlaylists(titleBatchChan <-chan []strin
 		trackURIs := utils.CollectFromChannel(pc.spotifyClient.SearchForTrackURIs(titleBatch))
 		if len(trackURIs) == 0 {
 			slog.Warn("Could not find a single Spotify track uri for the given track names")
-			return
+			continue
 		}
 
 		for _, playlistID := range pc.spotifyPlaylistIDs {
