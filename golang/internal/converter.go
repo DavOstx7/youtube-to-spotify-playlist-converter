@@ -12,6 +12,7 @@ import (
 
 const MaxTitlesBatchSize = 50
 const TracksInsertionPosition = 0
+const MaxAddTitlesToPlaylistWorkers = 5
 
 type PlaylistsConverter struct {
 	userConfig         *config.UserConfig
@@ -42,16 +43,15 @@ func (pc *PlaylistsConverter) Run() <-chan string {
 	titleBatchChan := pc.youtubeClient.FetchPlaylistsTitles(pc.userConfig.YouTube.PlaylistIDs, MaxTitlesBatchSize)
 	snapshotIDChan := make(chan string)
 	var wg sync.WaitGroup
-
+	wg.Add(MaxAddTitlesToPlaylistWorkers)
+	
+	for i := 0; i < MaxAddTitlesToPlaylistWorkers; i++ {
+		go func() {
+			defer wg.Done()
+			pc.addTitlesToPlaylists(titleBatchChan, snapshotIDChan)
+		}()
+	}
 	go func() {
-		for titleBatch := range titleBatchChan {
-			titleBatch := titleBatch
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				pc.addTitlesToPlaylists(snapshotIDChan, titleBatch)
-			}()
-		}
 		wg.Wait()
 		close(snapshotIDChan)
 	}()
@@ -59,24 +59,19 @@ func (pc *PlaylistsConverter) Run() <-chan string {
 	return snapshotIDChan
 }
 
-func (pc *PlaylistsConverter) addTitlesToPlaylists(snapshotIDChan chan<- string, titles []string) {
-	trackURIs := utils.CollectFromChannel(pc.spotifyClient.SearchForTrackURIs(titles))
-	if len(trackURIs) == 0 {
-		slog.Warn("Could not find a single Spotify track uri for the given track names")
-		return
-	}
+func (pc *PlaylistsConverter) addTitlesToPlaylists(titleBatchChan <-chan []string, snapshotIDChan chan<- string) {
+	for titleBatch := range titleBatchChan {
+		trackURIs := utils.CollectFromChannel(pc.spotifyClient.SearchForTrackURIs(titleBatch))
+		if len(trackURIs) == 0 {
+			slog.Warn("Could not find a single Spotify track uri for the given track names")
+			return
+		}
 
-	var wg sync.WaitGroup
-	wg.Add(len(pc.spotifyPlaylistIDs))
-
-	for _, playlistID := range pc.spotifyPlaylistIDs {
-		playlistID := playlistID
-		go func() {
-			defer wg.Done()
+		for _, playlistID := range pc.spotifyPlaylistIDs {
+			playlistID := playlistID
 			pc.spotifyClient.AddTracksToPlaylist(snapshotIDChan, playlistID, trackURIs, TracksInsertionPosition)
-		}()
+		}
 	}
-	wg.Wait()
 }
 
 func (pc *PlaylistsConverter) setupLogs() {
