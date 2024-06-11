@@ -8,5 +8,6 @@ import (
 func main() {
 	converter := internal.NewPlaylistsConverter(config.GetUserConfig())
 	converter.Setup()
-	converter.Run()
+	for range converter.Run() {
+	}
 }
