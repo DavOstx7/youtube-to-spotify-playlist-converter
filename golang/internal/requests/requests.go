@@ -44,10 +44,14 @@ func do(method string, url string, config *Config) error {
 	}
 
 	retryOptions := []retry.Option{
-		retry.DelayType(retry.BackOffDelay),
+		retry.DelayType(retry.CombineDelay(
+			retry.BackOffDelay,
+			retry.RandomDelay,
+		)),
 		retry.Attempts(config.MaxAttempts),
-		retry.Delay(DefaultInitialRetryDelay),
+		retry.Delay(DefaultRetryDelay),
 		retry.MaxDelay(DefaultMaxRetryDelay),
+		retry.MaxJitter(DefaultMaxRetryJitter),
 		retry.OnRetry(func(n uint, err error) {
 			slog.Warn(fmt.Sprintf("Retry #%d: %s\n", n, err))
 		}),

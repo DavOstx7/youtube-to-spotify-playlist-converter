@@ -16,6 +16,7 @@ var (
 	DefaultMaxRequestAttempts  uint            = 3
 	DefaultSaveResponseBody    types.Any       = nil
 	DefaultPanicOnError        bool            = true
-	DefaultInitialRetryDelay   time.Duration   = 2000 * time.Millisecond
+	DefaultRetryDelay          time.Duration   = 2000 * time.Millisecond
+	DefaultMaxRetryJitter      time.Duration   = 6000 * time.Millisecond
 	DefaultMaxRetryDelay       time.Duration   = 30000 * time.Millisecond
 )
