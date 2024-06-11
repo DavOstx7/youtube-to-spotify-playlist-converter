@@ -29,59 +29,54 @@ func NewPlaylistsConverter(userConfig *config.UserConfig) *PlaylistsConverter {
 	}
 }
 
-func (pc *PlaylistsConverter) Run() [][]string {
-	if pc.spotifyPlaylistIDs == nil {
-		panic("playlists converter must be set up before running")
-	}
-
-	var wg sync.WaitGroup
-	snapshotIDsChan := make(chan []string)
-	titlesBatchChan := pc.youtubeClient.FetchPlaylistsTitles(pc.userConfig.YouTube.PlaylistIDs, MaxTitlesBatchSize)
-	for titlesBatch := range titlesBatchChan {
-		titlesBatch := titlesBatch
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			snapshotIDs := utils.CollectFromChannel(pc.addYouTubeTitlesToSpotifyPlaylists(titlesBatch))
-			if snapshotIDs != nil {
-				snapshotIDsChan <- snapshotIDs
-			}
-		}()
-	}
-	go func() {
-		wg.Wait()
-		close(snapshotIDsChan)
-	}()
-	return utils.CollectFromChannel(snapshotIDsChan)
-}
-
 func (pc *PlaylistsConverter) Setup() {
 	pc.setupLogs()
 	pc.setupSpotify()
 }
 
-func (pc *PlaylistsConverter) addYouTubeTitlesToSpotifyPlaylists(titles []string) <-chan string {
-	trackURIs := utils.CollectFromChannel(pc.spotifyClient.SearchForTrackURIs(titles))
-	if len(trackURIs) == 0 {
-		slog.Warn("Could not find a single Spotify track uri for the given track names")
-		return nil
+func (pc *PlaylistsConverter) Run() <-chan string {
+	if pc.spotifyPlaylistIDs == nil {
+		panic("playlists converter must be set up before running")
 	}
 
+	titleBatchChan := pc.youtubeClient.FetchPlaylistsTitles(pc.userConfig.YouTube.PlaylistIDs, MaxTitlesBatchSize)
+	snapshotIDChan := make(chan string)
 	var wg sync.WaitGroup
-	snapshotIDChan := make(chan string, len(trackURIs))
-	for _, spotifyPlaylistID := range pc.spotifyPlaylistIDs {
-		spotifyPlaylistID := spotifyPlaylistID
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			snapshotIDChan <- pc.spotifyClient.AddTracksToPlaylist(spotifyPlaylistID, trackURIs, TracksInsertionPosition)
-		}()
-	}
+
 	go func() {
+		for titleBatch := range titleBatchChan {
+			titleBatch := titleBatch
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				pc.addTitlesToPlaylists(snapshotIDChan, titleBatch)
+			}()
+		}
 		wg.Wait()
 		close(snapshotIDChan)
 	}()
+
 	return snapshotIDChan
+}
+
+func (pc *PlaylistsConverter) addTitlesToPlaylists(snapshotIDChan chan<- string, titles []string) {
+	trackURIs := utils.CollectFromChannel(pc.spotifyClient.SearchForTrackURIs(titles))
+	if len(trackURIs) == 0 {
+		slog.Warn("Could not find a single Spotify track uri for the given track names")
+		return
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(len(pc.spotifyPlaylistIDs))
+
+	for _, playlistID := range pc.spotifyPlaylistIDs {
+		playlistID := playlistID
+		go func() {
+			defer wg.Done()
+			pc.spotifyClient.AddTracksToPlaylist(snapshotIDChan, playlistID, trackURIs, TracksInsertionPosition)
+		}()
+	}
+	wg.Wait()
 }
 
 func (pc *PlaylistsConverter) setupLogs() {
@@ -100,6 +95,7 @@ func (pc *PlaylistsConverter) setupLogs() {
 func (pc *PlaylistsConverter) setupSpotify() {
 	pc.spotifyClient.SetUserID()
 	pc.spotifyPlaylistIDs = append(pc.spotifyPlaylistIDs, pc.userConfig.Spotify.ExistingPlaylistIDs...)
+
 	if len(pc.userConfig.Spotify.NewPlaylists) > 0 {
 		newPlaylistIDs := utils.CollectFromChannel(pc.spotifyClient.CreatePlaylists(pc.userConfig.Spotify.NewPlaylists))
 		pc.spotifyPlaylistIDs = append(pc.spotifyPlaylistIDs, newPlaylistIDs...)
