@@ -24,58 +24,56 @@ func (sc *SpotifyClient) SetUserID() {
 }
 
 func (sc *SpotifyClient) CreatePlaylists(playlistsInfo []config.SpotifyPlaylistInfo) <-chan string {
-	var wg sync.WaitGroup
 	playlistIDChan := make(chan string, len(playlistsInfo))
+	var wg sync.WaitGroup
+	wg.Add(len(playlistsInfo))
+
 	for _, playlistInfo := range playlistsInfo {
 		playlistInfo := playlistInfo
-		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if playlistID, err := sc.createPlaylist(playlistInfo); err == nil {
-				playlistIDChan <- *playlistID
-			}
+			sc.createPlaylist(playlistIDChan, playlistInfo)
 		}()
 	}
 	go func() {
 		wg.Wait()
 		close(playlistIDChan)
 	}()
+
 	return playlistIDChan
 }
 
 func (sc *SpotifyClient) SearchForTrackURIs(trackNames []string) <-chan string {
-	slog.Info(fmt.Sprintf("Starting to search Spotify track uris for %d track names...", len(trackNames)))
-
-	var wg sync.WaitGroup
 	trackURIChan := make(chan string, len(trackNames))
+	var wg sync.WaitGroup
+	wg.Add(len(trackNames))
+	
+	slog.Info(fmt.Sprintf("Starting to search Spotify track uris for %d track names...", len(trackNames)))
 	for _, trackName := range trackNames {
 		trackName := trackName
-		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			trackURI := sc.searchForTrackURI(trackName)
-			if trackURI != nil {
-				trackURIChan <- *trackURI
-			}
+			sc.searchForTrackURI(trackURIChan, trackName)
 		}()
 	}
 	go func() {
 		wg.Wait()
 		close(trackURIChan)
 	}()
+
 	return trackURIChan
 }
 
-func (sc *SpotifyClient) AddTracksToPlaylist(playlistID string, trackURIs []string, position int) string {
+func (sc *SpotifyClient) AddTracksToPlaylist(snapshotIDChan chan<- string, playlistID string, trackURIs []string, position int) {
 	slog.Info(fmt.Sprintf("Adding %d track uris to Spotify playlist '%s'", len(trackURIs), playlistID))
 	snapshotID := AddTracksToPlaylist(sc.accessToken, playlistID, trackURIs, position)
 	slog.Debug(fmt.Sprintf("Snapshot id of the new added tracks for Spotify playlist '%s' is '%s'", playlistID, snapshotID))
-	return snapshotID
+	snapshotIDChan <- snapshotID
 }
 
-func (sc *SpotifyClient) createPlaylist(playlistInfo config.SpotifyPlaylistInfo) (*string, error) {
+func (sc *SpotifyClient) createPlaylist(playlistIDChan chan<- string, playlistInfo config.SpotifyPlaylistInfo) {
 	if sc.userID == nil {
-		return nil, fmt.Errorf("user ID must be set in order to create Spotify playlist")
+		panic("user ID must be set in order to create Spotify playlist")
 	}
 
 	if playlistInfo.Public {
@@ -84,16 +82,16 @@ func (sc *SpotifyClient) createPlaylist(playlistInfo config.SpotifyPlaylistInfo)
 		slog.Info(fmt.Sprintf("Creating new private Spotify playlist '%s'", playlistInfo.Name))
 	}
 	response := CreatePlaylist(sc.accessToken, *sc.userID, playlistInfo)
-	return &response.ID, nil
+	playlistIDChan <- response.ID
 }
 
-func (sc *SpotifyClient) searchForTrackURI(trackName string) *string {
+func (sc *SpotifyClient) searchForTrackURI(trackURIChan chan<- string, trackName string) {
 	tracks := SearchForTracks(sc.accessToken, trackName, SingleTrack)
 	if tracks == nil || len(tracks.Items) == 0 {
 		slog.Warn(fmt.Sprintf("Failed to find Spotify track uri for '%s'", trackName))
-		return nil
+		return
 	}
-
+	
 	slog.Debug(fmt.Sprintf("Found Spotify track uri '%s' for '%s'", tracks.Items[0].URI, trackName))
-	return &tracks.Items[0].URI
+	trackURIChan <- tracks.Items[0].URI
 }
