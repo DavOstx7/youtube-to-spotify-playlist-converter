@@ -13,12 +13,11 @@ var TokenConfig = &config.GetTokenConfig().Spotify
 
 func authorize(c *gin.Context) {
 	queryParams := spotify.NewAuthorizationQueryParams(TokenConfig.ClientID, TokenConfig.RedirectURI)
-	url, err := requests.BuildURLWithQuery(spotify.APIConfig.URLs.Authorization, &queryParams)
+	url, err := requests.BuildURLWithQuery(spotify.APIConfig.URLs.Authorization, queryParams)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.Redirect(http.StatusFound, url)
 }
 
