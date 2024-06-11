@@ -53,7 +53,7 @@ func do(method string, url string, config *Config) error {
 		retry.MaxDelay(DefaultMaxRetryDelay),
 		retry.MaxJitter(DefaultMaxRetryJitter),
 		retry.OnRetry(func(n uint, err error) {
-			slog.Warn(fmt.Sprintf("Retry #%d: %s\n", n, err))
+			slog.Warn(fmt.Sprintf("Retry #%d: %s", n, err))
 		}),
 	}
 
