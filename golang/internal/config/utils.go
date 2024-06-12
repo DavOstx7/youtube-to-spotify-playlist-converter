@@ -32,7 +32,6 @@ func getConfigFilePath(filename string) (string, error) {
 
 func loadConfig(filename string, config Config) error {
 	configFilePath, err := getConfigFilePath(filename)
-
 	if err != nil {
 		return err
 	}
