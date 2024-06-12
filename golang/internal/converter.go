@@ -44,7 +44,7 @@ func (pc *PlaylistsConverter) Run() <-chan string {
 	snapshotIDChan := make(chan string)
 	var wg sync.WaitGroup
 	wg.Add(NumAddTitlesToPlaylists)
-	
+
 	for i := 0; i < NumAddTitlesToPlaylists; i++ {
 		go func() {
 			defer wg.Done()
@@ -64,7 +64,7 @@ func (pc *PlaylistsConverter) addTitlesToPlaylists(titleBatchChan <-chan []strin
 		trackURIs := utils.CollectFromChannel(pc.spotifyClient.SearchForTrackURIs(titleBatch))
 		if len(trackURIs) == 0 {
 			slog.Warn("Could not find a single Spotify track uri for the given track names")
-			return
+			continue
 		}
 
 		for _, playlistID := range pc.spotifyPlaylistIDs {
