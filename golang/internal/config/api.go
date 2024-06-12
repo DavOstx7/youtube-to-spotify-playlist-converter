@@ -24,17 +24,17 @@ type APIConfig struct {
 	} `json:"spotify"`
 }
 
-var apiConfigRef *APIConfig
+var apiConfig *APIConfig
 
 func GetAPIConfig() *APIConfig {
-	if apiConfigRef != nil {
-		return apiConfigRef
+	if apiConfig != nil {
+		return apiConfig
 	}
 
-	apiConfigRef = &APIConfig{}
-	if err := loadConfig("api_config.json", apiConfigRef); err != nil {
+	apiConfig = new(APIConfig)
+	if err := loadConfig("api_config.json", apiConfig); err != nil {
 		panic(err)
 	}
 
-	return apiConfigRef
+	return apiConfig
 }

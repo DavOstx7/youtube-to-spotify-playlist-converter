@@ -23,17 +23,17 @@ type UserConfig struct {
 	} `json:"spotify"`
 }
 
-var userConfigRef *UserConfig
+var userConfig *UserConfig
 
 func GetUserConfig() *UserConfig {
-	if userConfigRef != nil {
-		return userConfigRef
+	if userConfig != nil {
+		return userConfig
 	}
 
-	userConfigRef = &UserConfig{}
-	if err := loadConfig("user_config.json", userConfigRef); err != nil {
+	userConfig = new(UserConfig)
+	if err := loadConfig("user_config.json", userConfig); err != nil {
 		panic(err)
 	}
 
-	return userConfigRef
+	return userConfig
 }
