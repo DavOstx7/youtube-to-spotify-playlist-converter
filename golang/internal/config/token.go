@@ -10,17 +10,17 @@ type TokenConfig struct {
 	Spotify SpotifyTokenConfig `json:"spotify"`
 }
 
-var tokenConfigRef *TokenConfig
+var tokenConfig *TokenConfig
 
 func GetTokenConfig() *TokenConfig {
-	if tokenConfigRef != nil {
-		return tokenConfigRef
+	if tokenConfig != nil {
+		return tokenConfig
 	}
 
-	tokenConfigRef = &TokenConfig{}
-	if err := loadConfig("token_config.json", tokenConfigRef); err != nil {
+	tokenConfig = new(TokenConfig)
+	if err := loadConfig("token_config.json", tokenConfig); err != nil {
 		panic(err)
 	}
 
-	return tokenConfigRef
+	return tokenConfig
 }

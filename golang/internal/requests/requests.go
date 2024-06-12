@@ -98,7 +98,7 @@ func do(method string, url string, config *Config) error {
 		}
 
 		if config.ExpectedStatusCodes != nil {
-			if err := ValidateResponseStatusCode(resp, config.ExpectedStatusCodes); err != nil {
+			if err := ValidateResponseStatusCode(resp, respBody, config.ExpectedStatusCodes); err != nil {
 				return err
 			}
 		}

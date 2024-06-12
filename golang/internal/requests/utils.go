@@ -22,7 +22,7 @@ func BuildURLWithQuery(url string, queryParams types.Any) (string, error) {
 
 func BuildRawQuery(queryParams types.Any) (string, error) {
 	kind := utils.ReflectUnderlyingKind(queryParams)
-	
+
 	switch kind {
 	case reflect.Struct:
 		return buildRawQueryFromStruct(queryParams)
@@ -33,13 +33,13 @@ func BuildRawQuery(queryParams types.Any) (string, error) {
 	}
 }
 
-func ValidateResponseStatusCode(resp *http.Response, expectedStatusCodes []int) error {
+func ValidateResponseStatusCode(resp *http.Response, respBody []byte, expectedStatusCodes []int) error {
 	if utils.SliceContains(expectedStatusCodes, resp.StatusCode) {
 		return nil
 	}
 
 	return errors.ValidationError{
-		Message: fmt.Sprintf("Invalid response status '%s' from url '%s'", resp.Status, resp.Request.URL),
+		Message: fmt.Sprintf("Invalid response status '%s' from url '%s': '%s'", resp.Status, resp.Request.URL, respBody),
 	}
 }
 
