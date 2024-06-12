@@ -56,7 +56,7 @@ export class SpotifyAPI {
         });
     }
 
-    @HttpRequest([StatusCodes.CREATED])
+    @HttpRequest([StatusCodes.OK])
     public async requestToAddTracks(accessToken: string, playlistId: string, trackUris: string[], position: number): Promise<any> {
         this.validateTrackUrisSize(trackUris);
         

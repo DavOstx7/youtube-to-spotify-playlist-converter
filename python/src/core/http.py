@@ -11,7 +11,7 @@ from src.core.consts import (
 )
 
 logger = logging.getLogger(__name__)
-Params = ParamSpec("P")
+Params = ParamSpec("Params")
 HttpRequestCallableT = Callable[[Params], Awaitable[httpx.Response]]
 CustomHttpRequestCallableT = Callable[[Params], Awaitable[dict]]
 
@@ -38,7 +38,6 @@ def validate_response(response: httpx.Response, expected_status_codes: List[int]
 def http_request(expected_status_codes: List[int], max_attempts: int = MAX_REQUEST_ATTEMPTS,
                  log_response: bool = LOG_HTTP_RESPONSES):
     def decorator(function: HttpRequestCallableT) -> CustomHttpRequestCallableT:
-        @functools.wraps(function)
         @retry(
             reraise=True,
             stop=stop_after_attempt(max_attempts),
@@ -48,6 +47,7 @@ def http_request(expected_status_codes: List[int], max_attempts: int = MAX_REQUE
             ),
             after=after_log(logger, logging.WARNING),
         )
+        @functools.wraps(function)
         async def wrapper(*args: Params.args, **kwargs: Params.kwargs) -> dict:
             response = await function(*args, **kwargs)
             validate_response(response, expected_status_codes, log_response)

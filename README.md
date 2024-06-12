@@ -26,6 +26,7 @@ Convert YouTube playlists to Spotify playlists via different programming languag
       run one of the following scripts:
         1. [receive_token.py](python/src/spotify/receive_token.py)
         2. [receiveToken.ts](typescript/spotify/receiveToken.ts)
+        3. [receive_token.go](golang/cmd/spotify/receive_token.go)
 
 ---
 
@@ -104,15 +105,20 @@ First, make sure the user configuration file [config/user_config.json](config/us
 run one of the following programs:
 
 **Python 3^6**: [main.py](python/main.py)
-```shell
-python python/main.py
+```bash
+cd python; python main.py
 ```
 
 **TypeScript**: [main.ts](typescript/main.ts)
-```shell
-ts-node typescript/main.ts
+```bash
+cd typescript; ts-node main.ts
 ```
-   
+
+**Golang**: [main.go](golang/cmd/main.go)
+```bash
+cd golang; go run cmd/main.go
+```
+
 
 ## Examples
 
@@ -124,6 +130,9 @@ ts-node typescript/main.ts
 2. TypeScript 
 <img src="./examples/typescript_oppenheimer.png">
 
+
+3. Golang
+<img src="./examples/golang_oppenheimer.png">
 
 
 [YouTubeAPILink]:https://developers.google.com/youtube/v3/getting-started

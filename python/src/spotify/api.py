@@ -45,7 +45,7 @@ async def request_to_search_for_track(access_token: str, name: str, limit: int):
     return await client.get(SPOTIFY_SEARCH_URL, params=query_params, headers=headers)
 
 
-@http_request(expected_status_codes=[StatusCodes.CREATED])
+@http_request(expected_status_codes=[StatusCodes.OK])
 async def request_to_add_tracks(access_token: str, playlist_id: str, track_uris: List[str], position: int):
     _validate_track_uris_size(track_uris)
     url = SPOTIFY_TRACKS_URL.format(playlist_id=playlist_id)

@@ -21,7 +21,7 @@ export default class YoutubeClient {
                     logger.debug(`Found YouTube video title '${item.snippet.title}'`);
                     titlesBatch.push(item.snippet.title);
                     
-                    if (titlesBatch.length >= maxBatchSize){
+                    if (titlesBatch.length >= maxBatchSize) {
                         yield titlesBatch;
                         titlesBatch = [];
                     }
@@ -29,7 +29,7 @@ export default class YoutubeClient {
             }
         }
 
-        if (titlesBatch.length > 0){
+        if (titlesBatch.length > 0) {
             yield titlesBatch;
         }
     }
