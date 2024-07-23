@@ -81,6 +81,6 @@ func SaveResponseBody(saveResponseBody types.Any) Option {
 
 func PanicOnError(panicOnError bool) Option {
 	return func(c *Config) {
-		c.SaveResponseBody = panicOnError
+		c.PanicOnError = panicOnError
 	}
 }
